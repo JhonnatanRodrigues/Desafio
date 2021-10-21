@@ -1,0 +1,83 @@
+-- Criar Tabela 
+create Table tb_cadastro_cliente
+(
+	tcc_codigo serial primary key,
+	tcc_nome text,
+	tcc_cnpj character(16),
+	tcc_data_cadastro Timestamp with Time Zone,
+	tcc_endereco  text,
+	tcc_telefone varchar(16)
+	
+);
+
+-- Criar Função de inserir
+create function tcc_insert(_nome text,_cnpj character,_data_cadastro Timestamp with Time Zone,_endereco  text,_telefone varchar)
+returns int as
+$$
+begin
+	insert into tb_cadastro_cliente(tcc_nome, tcc_cnpj, tcc_data_cadastro, tcc_endereco, tcc_telefone)
+	values(_nome, _cnpj, _data_cadastro, _endereco, _telefone);
+	if found then
+		return 1;
+	else return 0;
+	end if;
+end
+$$
+language plpgsql
+
+-- Criar Função de Atualizar
+create or replace function tcc_update(_codigo int,_nome text,_cnpj character,_data_cadastro Timestamp with Time Zone,_endereco  text,_telefone varchar)
+returns int as
+$$
+begin
+	update tb_cadastro_cliente
+	set 
+		tcc_codigo = _codigo,
+		tcc_nome = _nome,
+		tcc_cnpj = _cnpj,
+		tcc_data_cadastro = _data_cadastro,
+		tcc_endereco = _endereco,
+		tcc_telefone = _telefone
+	where tcc_codigo = _codigo;
+	if found then
+		return 1;
+	else return 0;
+	end if;
+end
+$$
+language plpgsql
+
+--Criar Função de selecionar
+create or replace function tcc_select()
+returns table
+(
+	codigo int,
+	nome text,
+	cnpj character,
+	data_cadastro Timestamp with Time Zone,
+	endereco  text,
+	telefone varchar
+) as
+$$
+begin
+	return query
+	select tcc_codigo, tcc_nome, tcc_cnpj, tcc_data_cadastro, tcc_endereco, tcc_telefone from tb_cadastro_cliente order by tcc_codigo;
+end
+$$
+language plpgsql
+
+-- Criar Função de Deletar
+
+create or replace function tcc_delete(_codigo int)
+returns int as
+$$
+begin
+	delete From tb_cadastro_cliente
+	where tcc_codigo = _codigo;
+	if found then
+		return 1;
+	else return 0;
+	end if;
+end
+$$
+language plpgsql
